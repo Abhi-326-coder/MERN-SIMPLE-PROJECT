@@ -10,6 +10,7 @@ const app = express();
 app.use(express.json());// 
 app.use(express.urlencoded({extended:true}));
 
+// api to get all the products data 
 app.get("/api/products",async(req,res)=>{
     try {
         const products = await Product.find({});
@@ -20,6 +21,7 @@ app.get("/api/products",async(req,res)=>{
     }
 })
 
+// api to create a product from taking data from user
 app.post("/api/products",async(req,res)=>{
     const product = req.body;
 
@@ -37,6 +39,7 @@ app.post("/api/products",async(req,res)=>{
     }
 }) 
 
+// api to delete the product from database using the id  
 app.delete("/api/product/:id",async (req,res)=>{
     const {id} = req.params;
 
@@ -45,6 +48,18 @@ app.delete("/api/product/:id",async (req,res)=>{
         res.status(200).json({success:true,message:"Product deleted"});
     } catch (error) {
         res.status(404).json({success:false,message:"product not found"})
+    }
+});
+
+// api to update the product details from the database hence using put route handler
+app.put("/api/products/:id",async(req,res)=>{
+    const {id} = req.params;
+    const product = req.body;
+    try{
+        const updatedProduct = await Product.findByIdAndUpdate(id,product,{new:true});
+        res.status(200).json({success:true,data:updatedProduct});
+    }catch(error){
+        res.status(500).json({success:false,message:"Server Error"});
     }
 });
 
