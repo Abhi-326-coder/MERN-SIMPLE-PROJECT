@@ -10,8 +10,14 @@ const app = express();
 app.use(express.json());// 
 app.use(express.urlencoded({extended:true}));
 
-app.get("/",(req,res)=>{
-    res.send("hello");
+app.get("/api/products",async(req,res)=>{
+    try {
+        const products = await Product.find({});
+        res.status(200).json({success:false,data:products})
+    } catch (error) {
+        console.log("error in fetching products:",error.message);
+        res.status(500).json({success:false,message:"Server error"})
+    }
 })
 
 app.post("/api/products",async(req,res)=>{
@@ -20,7 +26,7 @@ app.post("/api/products",async(req,res)=>{
     if(!product.name || !product.price || !product.image){
         return res.status(400).json({success:false, message:"Please provide all fields"});
     }
-    const newProduct = new Product(product);
+    const newProduct = new Product(product);// We can also created product using product.create({data object})
 
     try {
         await newProduct.save();
